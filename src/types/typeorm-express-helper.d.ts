@@ -1,11 +1,25 @@
 import { DataSource } from "typeorm";
 import { EntityTarget } from "typeorm/common/EntityTarget";
 import { Response, Request } from "express";
-import {DefaultMsgs} from "../src/defaultMsg"
+
 export interface TypeormHelperConfigs {
-    relations: any | null;
-    statusMensajes: any | null;
+    relations?: any | null;
+    statusMensajes?: any | null;
 }
+
+export interface DefaultMsgs {
+    "400" : string,
+    "500" : string,
+    "200" : {
+        get :string,
+        create : string,
+        update : string,
+        delete : string,
+        getMany : string
+    }
+}
+
+export declare const defaultSpanishMsgs : DefaultMsgs
 
 export declare class TypeormHelper {
     constructor(

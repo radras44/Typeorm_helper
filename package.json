@@ -1,8 +1,8 @@
 {
   "name": "typeorm-express-helper",
-  "version": "0.1.5",
+  "version": "0.0.2",
   "main" : "dist/index.js",
-  "description": "clase para agilizar el desarrollo con express y typeorm, creando consultas comunes en un par de lineas",
+  "description": "no hace nada",
   "scripts": {
     "build" : "npx tsc",
     "dev": "ts-node-dev --respawn src/test.ts",
@@ -10,7 +10,7 @@
   },
   "keywords": ["typeorm","express","node","typescript","helper"],
   "author": "Radras44",
-  "types": "types/typeorm-express-helper.d.ts",
+  "types": "src/types/typeorm-express-helper.d.ts",
   "license": "MIT",
   "dependencies": {
     "@types/express": "^4.17.17",

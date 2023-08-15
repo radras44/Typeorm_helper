@@ -1,11 +1,7 @@
-import { DataSource, SelectQueryBuilder } from "typeorm";
-import { EntityTarget } from "typeorm/common/EntityTarget";
-import { DefaultMsgs, defaultSpanishMsgs } from "./defaultMsg";
+import { DataSource, EntityTarget, SelectQueryBuilder } from "typeorm";
+import { defaultSpanishMsgs } from "./defaultMsg";
 import { Response, Request } from "express";
-export interface TypeormHelperConfigs {
-    relations?: any | null
-    statusMensajes?: any | null
-}
+import { DefaultMsgs, TypeormHelperConfigs } from "./types/typeorm-express-helper";
 
 export class TypeormHelper {
     dataSource: DataSource
@@ -50,8 +46,8 @@ export class TypeormHelper {
             const queryRes = await queryBuilder.getMany()
 
             return res.status(200).json({
-                result : queryRes,
-                message : this.defaultMsgs[200].getAll
+                result: queryRes,
+                message: this.defaultMsgs[200].getMany
             })
         } catch (error) {
             console.log(error)
@@ -61,10 +57,10 @@ export class TypeormHelper {
         }
     }
 
-    async getOne(req:Request,res:Response,typeormHelperConfigs:TypeormHelperConfigs){
-        const {id} = req.params
-        if(!id){
-            return res.status(400).json({error : this.defaultMsgs[400]})
+    async getOne(req: Request, res: Response, typeormHelperConfigs: TypeormHelperConfigs) {
+        const { id } = req.params
+        if (!id) {
+            return res.status(400).json({ error: this.defaultMsgs[400] })
         }
         try {
             const queryBuilder = this.dataSource.getRepository(this.entity).createQueryBuilder(this.entityLabel)
@@ -72,13 +68,13 @@ export class TypeormHelper {
             if (typeormHelperConfigs.relations) {
                 this.addRelations(queryBuilder, this.getRelations(typeormHelperConfigs.relations))
             }
-            queryBuilder.where(`${this.entityLabel}.id`,{id : id})
+            queryBuilder.where(`${this.entityLabel}.id`, { id: id })
             //ejecutar consulta
             const queryRes = await queryBuilder.getMany()
 
             return res.status(200).json({
-                result : queryRes,
-                message : this.defaultMsgs[200].get
+                result: queryRes,
+                message: this.defaultMsgs[200].get
             })
         } catch (error) {
             console.log(error)
@@ -88,64 +84,86 @@ export class TypeormHelper {
         }
     }
 
-    async create (req:Request,res:Response){
-        const {data} = req.body
-        if(!data){
+    async create(req: Request, res: Response) {
+        const { data } = req.body
+        if (!data) {
             return res.status(400).json({
-                error : this.defaultMsgs[400]
+                error: this.defaultMsgs[400]
             })
         }
 
         try {
             const queryBuilder = this.dataSource.createQueryBuilder()
             queryBuilder.insert().into(this.entity)
-            .values(data)
+                .values(data)
 
             await queryBuilder.execute()
 
         } catch (error) {
             console.log(error)
-            return res.status(500).json({error : this.defaultMsgs[500]})
+            return res.status(500).json({ error: this.defaultMsgs[500] })
         }
     }
 
-    async update (req:Request,res:Response){
-        const {data,id} = req.body
-        if(!data || !id){
+    async update(req: Request, res: Response) {
+        const { data, id } = req.body
+        if (!data || !id) {
             return res.status(400).json({
-                error : this.defaultMsgs[400]
+                error: this.defaultMsgs[400]
             })
         }
-        
+
         try {
             const queryBuilder = this.dataSource.createQueryBuilder()
             queryBuilder.update(this.entity).set(data)
-            .where("id = :id",{id : id})
+                .where("id = :id", { id: id })
 
             await queryBuilder.execute()
 
         } catch (error) {
             console.log(error)
-            return res.status(500).json({error : this.defaultMsgs[500]})
+            return res.status(500).json({ error: this.defaultMsgs[500] })
         }
     }
 
-    async delete (req:Request,res:Response){
-        const {id} = req.body
-        if(!id){
-            return res.status(400).json({error : this.defaultMsgs[500]})
+    async delete(req: Request, res: Response) {
+        const { id } = req.body
+        if (!id) {
+            return res.status(400).json({ error: this.defaultMsgs[500] })
         }
 
         try {
             const queryBuilder = this.dataSource.createQueryBuilder()
-            .delete()
-            .from(this.entity)
-            .where(`id = :id`,{id : id})
+                .delete()
+                .from(this.entity)
+                .where(`id = :id`, { id: id })
 
             await queryBuilder.execute()
 
         } catch (error) {
-            
+            console.log(error)
+            return res.status(500).json({ error: this.defaultMsgs[500] })
+        }
+    }
+
+    async getAllRelated(req: Request, res: Response, relatedWith: string) {
+        const { id } = req.params
+
+        try {
+            const queryBuilder = this.dataSource.getRepository(this.entity)
+                .createQueryBuilder(this.entityLabel)
+                .where(`${this.entityLabel}.${relatedWith} = :id`, { id: id })
+
+            const queryRes = await queryBuilder.execute()
+
+            return res.status(200).json({
+                message: this.defaultMsgs[200].getMany,
+                result: queryRes
+            })
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ error: this.defaultMsgs[500] })
         }
     }
 }
+

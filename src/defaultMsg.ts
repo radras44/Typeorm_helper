@@ -1,14 +1,4 @@
-export interface DefaultMsgs {
-    "400" : string,
-    "500" : string,
-    "200" : {
-        get :string,
-        create : string,
-        update : string,
-        delete : string,
-        getAll : string
-    }
-}
+import { DefaultMsgs } from "./types/typeorm-express-helper";
 
 export const defaultSpanishMsgs : DefaultMsgs = {
     "400" : "Informacion insuficiente para realizar la consulta",
@@ -18,6 +8,6 @@ export const defaultSpanishMsgs : DefaultMsgs = {
         create : "Registro insertado con exito",
         update : "Registro actualizado con exito",
         delete: "Registro eliminado con exito",
-        getAll : "Registros obtenidos con exito"
+        getMany : "Registros obtenidos con exito"
     }
 }
